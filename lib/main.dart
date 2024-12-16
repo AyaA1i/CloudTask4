@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:task3/screens/main_screen.dart';
 import 'package:task3/screens/sign_in.dart';
 import 'package:task3/services/notification_service.dart';
@@ -14,10 +13,6 @@ void main() async {
 
   FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
   FirebaseAnalytics.instance.setSessionTimeoutDuration(const Duration(minutes: 30));
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
-  if (prefs.containsKey('signedInUser')) {
-    await prefs.remove('signedInUser');
-  }
   await NotificationService.instance.initialize();
   final Widget homeScreen = await getInitialScreen();
   runApp(MyApp(

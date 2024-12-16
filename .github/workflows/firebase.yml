@@ -1,0 +1,46 @@
+name: Flutter CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.27.0'
+
+      - name: Install JDK 17
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openjdk-17-jdk
+
+      - name: Set JAVA_HOME for JDK 17
+        run: |
+          echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" | sudo tee -a /etc/environment
+          source /etc/environment
+          echo "JAVA_HOME set to:"
+          echo $JAVA_HOME
+          java -version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Upload to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: "1:998268529866:android:88fe315bc86b50d09c1833"
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          testers: ayaali95248@gmail.com
+          file: build/app/outputs/flutter-apk/app-release.apk
